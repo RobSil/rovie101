@@ -28,12 +28,12 @@ public class MovieService {
     public Mono<Movie> saveEntity(Movie movie) {
 //        movie.setId(1L);
 //        return Mono.just(movie);
-//        return movieRepository.save(movie);
-        var result = findByName(movie.getName())
-                .hasElement()
-                .flatMap(bool -> Boolean.FALSE.equals(bool) ? movieRepository.save(movie) : Mono.empty())
-                .onErrorResume(e -> Mono.empty());
-        result.subscribe(movieItem -> log.info("saveEntity movie: " + movieItem.toString()));
-        return result;
+        return movieRepository.save(movie);
+//        var result = findByName(movie.getName())
+//                .hasElement()
+//                .flatMap(bool -> Boolean.FALSE.equals(bool) ? movieRepository.save(movie) : Mono.empty())
+//                .onErrorResume(e -> Mono.empty());
+//        result.subscribe(movieItem -> log.info("saveEntity movie: " + movieItem.toString()));
+//        return result;
     }
 }

@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
-import reactor.util.function.Tuples;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -23,8 +22,8 @@ public class MovieController {
     private final MovieService movieService;
 
     @GetMapping("/parseMovies")
-    Flux<?> parseMovies(@RequestParam int page) {
-        return tmdbService.getTopRatedMovies(1);
+    List<Movie> parseMovies(@RequestParam int page) {
+        return tmdbService.getTopRatedMovies(page);
     }
 
     @GetMapping("/reactorDemo")

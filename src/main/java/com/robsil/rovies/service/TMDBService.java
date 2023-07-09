@@ -8,18 +8,23 @@ import com.robsil.rovies.data.domain.Movie;
 import com.robsil.rovies.data.domain.MovieGenre;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import reactor.core.publisher.Flux;
-import reactor.netty.http.client.HttpClient;
 import reactor.util.function.Tuples;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @Slf4j
@@ -39,89 +44,86 @@ public class TMDBService {
 
     @PostConstruct
     void init() {
-        httpClient = HttpClient.create()
-                .baseUrl(tmdbUrl)
-                .headers(headers -> {
-                    headers.add("Authorization", "Bearer " + accessToken);
-                    headers.add("accept", "application/json");
-                });
+        httpClient = HttpClient.newBuilder().build();
     }
 
     //    @Transactional
-    public Flux<MovieGenre> getTopRatedMovies(int page) {
+    public List<Movie> getTopRatedMovies(int page) {
         Assert.isTrue(page > 0, "page should be higher than zero");
-//        var flux = Flux.fromIterable(List.of(1, 2, 3));
-//        var mono = Mono.just(4);
-//        flux.zipWith
-        var result = httpClient.get()
-                .uri("/3/movie/top_rated?page=" + page)
-                .responseContent()
-                .aggregate()
-                .asString()
-                .map(body -> {
+//        tmdbUrl + "/3/movie/top_rated?page=" + page
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(tmdbUrl + "/3/movie/top_rated?page=" + page))
+                .header("Authorization", "Bearer " + accessToken)
+                .GET()
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        Map<String, Object> map;
+        try {
+            map = objectMapper.readValue(response.body(), new TypeReference<Map<String, Object>>() {
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
+        return ((List<Map<String, Object>>) map.get("results")).stream().map(movieMap -> {
                     try {
-                        return objectMapper.readValue(body, new TypeReference<HashMap<String, Object>>() {
+                        var genres = genreService.findAllGenresByTmdbIdIn(((List<Integer>) movieMap.get("genre_ids")).stream()
+                                .map(Integer::longValue)
+                                .toList()).collectList().toFuture().get();
+                        var movie = movieService.saveEntity(Movie.builder()
+                                .name((String) movieMap.get("title"))
+                                .description((String) movieMap.get("overview"))
+                                .build()).toFuture().get();
+                        genres.forEach(genre -> {
+                            try {
+                                movieGenreService.save(MovieGenre.builder()
+                                        .movieId(movie.getId())
+                                        .genreId(genre.getId())
+                                        .build()).toFuture().get();
+                            } catch (Exception e) {
+                                log.info("exception occurred movieGenre save forEach. " + e.getMessage());
+                            }
                         });
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
+                        return movie;
+                    } catch (Exception e) {
+                        log.info("exception occurred ((List<Map<String, Object>>) map.get(\"results\")). " + e.getMessage());
+                        return null;
                     }
                 })
-                .flatMapIterable(map -> (ArrayList<HashMap<String, Object>>) map.get("results"));
-        log.info("breakpoint");
-        return processMovieResponse(result);
+                .toList();
     }
 
-    public Flux<MovieGenre> processMovieResponse(Flux<Map<String, Object>> response) {
-        var result = response
-                .flatMap(map -> {
-                    var genres =
-                            genreService.findAllGenresByTmdbIdIn(((List<Integer>) map.get("genre_ids")).stream()
-                                    .map(Integer::longValue)
-                                    .toList());
+    @SneakyThrows
+    public List<Genre> getGenres() {
 
-                    genres.subscribe(genre -> log.info("genres: " + genre.toString()));
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(tmdbUrl + "/3/genre/movie/list"))
+                .header("Authorization", "Bearer " + accessToken)
+                .GET()
+                .build();
+        var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-                    var movie = movieService.saveEntity(Movie.builder()
-                            .name((String) map.get("title"))
-                            .description((String) map.get("overview"))
-                            .build());
-                    var tuples = genres.flatMap(genre -> movie.map(movieItem -> Tuples.of(genre, movieItem)));
-                    tuples.subscribe(tuple -> log.info("tuples sub: " + tuple.toString()));
-                    tuples.hasElements().subscribe(bool -> log.info("tuple hasElements: " + bool.toString()));
-                    return tuples;
-                })
-                .flatMap(tuple -> {
-                    var movieGenre = movieGenreService.save(MovieGenre.builder()
-                            .genreId(tuple.getT1().getId())
-                            .movieId(tuple.getT2().getId())
-                            .build());
-                    return movieGenre;
-                });
-
-        return result;
-    }
-
-    public Flux<Genre> getGenres() {
-        var result = httpClient.get()
-                .uri("/3/genre/movie/list")
-                .responseContent()
-                .aggregate()
-                .asString()
-                .map(body -> {
+        var body = objectMapper.readValue(response.body(), new TypeReference<HashMap<String, Object>>() {
+        });
+        var result = ((ArrayList<HashMap<String, Object>>) body.get("genres"))
+                .stream()
+                .map(genre -> {
                     try {
-                        return objectMapper.readValue(body, new TypeReference<HashMap<String, Object>>() {
-                        });
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
+                        return genreService.saveEntity(Genre.builder().name((String) genre.get("name"))
+                                .tmdbId(((Integer) genre.get("id")).longValue())
+                                .build()).toFuture().get();
+                    } catch (Exception e) {
+                        log.info("exception occurred. " + e.getMessage());
+                        return null;
                     }
                 })
-                .flatMapIterable(map -> (ArrayList<HashMap<String, Object>>) map.get("genres"))
-                .flatMap(map -> {
-                    var genre = Genre.builder().name((String) map.get("name"))
-                            .tmdbId(((Integer) map.get("id")).longValue())
-                            .build();
-                    return genreService.saveEntity(genre);
-                });
+                .toList();
 
         log.info("breakpoint");
         return result;
