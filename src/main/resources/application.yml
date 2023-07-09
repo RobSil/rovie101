@@ -1,0 +1,16 @@
+
+spring:
+  r2dbc:
+    url: r2dbc:pool:postgres://localhost:5432/rovies
+    username: postgres
+    password: root
+  flyway:
+    url: jdbc:postgresql://localhost:5432/rovies
+    user: postgres
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+tmdb:
+  access-token: eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmZTUwMDkzMGQ0MmUxMzI4YTk1ZjAwMWYyZGRhN2M2OSIsInN1YiI6IjY0YTcwY2RiOTU3ZTZkMDBhYzZmZDEwYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.yviHXzepXPtZFV6Nw9Rdi2J5b-Recjn3HJ73mEouP6E
