@@ -22,6 +22,12 @@ public class MovieGenreService {
         return r2dbcTemplate.select(Query.query(Criteria.where("movie_id").is(movieId)), MovieGenre.class);
     }
 
+    public Flux<Long> findAllGenreIdsByMovieId(Long movieId) {
+        return r2dbcTemplate
+                .select(Query.query(Criteria.where("movie_id").is(movieId)).columns("id"), MovieGenre.class)
+                .map(MovieGenre::getGenreId);
+    }
+
     public Mono<MovieGenre> save(MovieGenre movieGenre) {
         Assert.notNull(movieGenre, "must not be null");
 

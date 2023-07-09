@@ -2,13 +2,14 @@ package com.robsil.rovies.service;
 
 import com.robsil.rovies.data.domain.Movie;
 import com.robsil.rovies.data.repository.MovieRepository;
+import com.robsil.rovies.model.movie.MovieDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.concurrent.ExecutionException;
 
 @Service
 @Slf4j
@@ -16,18 +17,17 @@ import java.util.concurrent.ExecutionException;
 public class MovieService {
 
     private final MovieRepository movieRepository;
+    private final R2dbcEntityTemplate entityTemplate;
 
     public Mono<Movie> findByName(String name) {
         return movieRepository.findByName(name);
     }
 
-    public Mono<Movie> findByid(Long id) {
+    public Mono<Movie> findById(Long id) {
         return movieRepository.findById(id);
     }
 
     public Mono<Movie> saveEntity(Movie movie) {
-//        movie.setId(1L);
-//        return Mono.just(movie);
         return movieRepository.save(movie);
 //        var result = findByName(movie.getName())
 //                .hasElement()
@@ -35,5 +35,9 @@ public class MovieService {
 //                .onErrorResume(e -> Mono.empty());
 //        result.subscribe(movieItem -> log.info("saveEntity movie: " + movieItem.toString()));
 //        return result;
+    }
+
+    public Flux<Movie> getPageable(Integer page, Integer pageSize) {
+        return movieRepository.findAllPageable(page, pageSize);
     }
 }

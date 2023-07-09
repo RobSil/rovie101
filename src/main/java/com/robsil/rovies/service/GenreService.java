@@ -22,6 +22,10 @@ public class GenreService {
         return genreRepository.save(genre);
     }
 
+    public Flux<Genre> findAllByMovieId(Long movieId) {
+        return genreRepository.findAllByMovieId(movieId);
+    }
+
     public Flux<Genre> findAllGenresByTmdbIdIn(Collection<Long> tmdbIds) {
         return genreRepository.findAllByTmdbIdIn(tmdbIds);
     }
