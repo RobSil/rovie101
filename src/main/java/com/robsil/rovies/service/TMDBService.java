@@ -1,6 +1,5 @@
 package com.robsil.rovies.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.robsil.rovies.data.domain.Genre;
@@ -13,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import reactor.core.publisher.Flux;
-import reactor.util.function.Tuples;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -24,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 @Service
 @Slf4j
@@ -33,7 +29,7 @@ public class TMDBService {
 
     @Value("${tmdb.access-token}")
     private String accessToken;
-    private static final String tmdbUrl = "https://api.themoviedb.org";
+    private static final String TMDB_URL = "https://api.themoviedb.org";
 
     private HttpClient httpClient;
 
@@ -52,7 +48,7 @@ public class TMDBService {
         Assert.isTrue(page > 0, "page should be higher than zero");
 //        tmdbUrl + "/3/movie/top_rated?page=" + page
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(tmdbUrl + "/3/movie/top_rated?page=" + page))
+                .uri(URI.create(TMDB_URL + "/3/movie/top_rated?page=" + page))
                 .header("Authorization", "Bearer " + accessToken)
                 .GET()
                 .build();
@@ -103,7 +99,7 @@ public class TMDBService {
     public List<Genre> getGenres() {
 
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(tmdbUrl + "/3/genre/movie/list"))
+                .uri(URI.create(TMDB_URL + "/3/genre/movie/list"))
                 .header("Authorization", "Bearer " + accessToken)
                 .GET()
                 .build();

@@ -2,10 +2,8 @@ package com.robsil.rovies.service;
 
 import com.robsil.rovies.data.domain.Movie;
 import com.robsil.rovies.data.repository.MovieRepository;
-import com.robsil.rovies.model.movie.MovieDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -29,12 +27,6 @@ public class MovieService {
 
     public Mono<Movie> saveEntity(Movie movie) {
         return movieRepository.save(movie);
-//        var result = findByName(movie.getName())
-//                .hasElement()
-//                .flatMap(bool -> Boolean.FALSE.equals(bool) ? movieRepository.save(movie) : Mono.empty())
-//                .onErrorResume(e -> Mono.empty());
-//        result.subscribe(movieItem -> log.info("saveEntity movie: " + movieItem.toString()));
-//        return result;
     }
 
     public Flux<Movie> getPageable(Integer page, Integer pageSize) {
