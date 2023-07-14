@@ -41,7 +41,11 @@ public class SecurityConfig {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable);
 
         http
-                .authorizeExchange(customizer -> customizer.anyExchange().permitAll());
+                .authorizeExchange(customizer -> {
+                    customizer.pathMatchers("/api/v1/users/register")
+                            .permitAll();
+                    customizer.anyExchange().authenticated();
+                });
 
         http.formLogin(customizer -> {
 

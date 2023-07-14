@@ -1,11 +1,14 @@
 package com.robsil.rovies.controller;
 
+import com.robsil.rovies.data.domain.User;
 import com.robsil.rovies.model.movie.MovieDto;
+import com.robsil.rovies.model.movie.RatedMovieDto;
 import com.robsil.rovies.service.MovieFacadeService;
 import com.robsil.rovies.service.MovieService;
 import com.robsil.rovies.util.mapper.MovieMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,8 +28,15 @@ public class MovieController {
         return movieFacadeService.getPageable(page, pageSize);
     }
 
+    @GetMapping("/rated")
+    public Flux<RatedMovieDto> getRatedPageable(@RequestParam Integer page,
+                                                @RequestParam Integer pageSize,
+                                                @AuthenticationPrincipal User user) {
+        return movieFacadeService.getRatedPageable(page, pageSize, user);
+    }
+
     @GetMapping("/{id}")
-    public Mono<MovieDto> getByid(@PathVariable Long id) {
+    public Mono<MovieDto> getById(@PathVariable Long id) {
         return movieFacadeService.findById(id);
     }
 

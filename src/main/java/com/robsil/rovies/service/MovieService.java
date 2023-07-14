@@ -32,4 +32,8 @@ public class MovieService {
     public Flux<Movie> getPageable(Integer page, Integer pageSize) {
         return movieRepository.findAllPageable(page, pageSize);
     }
+
+    public Flux<Movie> getRatedPageable(Integer page, Integer pageSize, Long userId) {
+        return movieRepository.findAllRatedPageable(page, pageSize, userId);
+    }
 }
