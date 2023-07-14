@@ -1,7 +1,7 @@
 package com.robsil.rovies.controller;
 
-import com.robsil.rovies.model.movieRate.MovieRateCreateRequest;
-import com.robsil.rovies.model.movieRate.MovieRateDto;
+import com.robsil.rovies.model.movierate.MovieRateCreateRequest;
+import com.robsil.rovies.model.movierate.MovieRateDto;
 import com.robsil.rovies.service.MovieRateFacadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,4 +1,4 @@
-package com.robsil.rovies.model.movieRate;
+package com.robsil.rovies.model.movierate;
 
 import java.math.BigDecimal;
 

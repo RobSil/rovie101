@@ -4,7 +4,6 @@ import com.robsil.rovies.data.domain.Movie;
 import com.robsil.rovies.model.genre.GenreDto;
 import com.robsil.rovies.model.movie.MovieDto;
 import com.robsil.rovies.model.movie.RatedMovieDto;
-import com.robsil.rovies.model.movieRate.MovieRateDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

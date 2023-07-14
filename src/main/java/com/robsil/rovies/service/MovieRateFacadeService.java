@@ -1,8 +1,8 @@
 package com.robsil.rovies.service;
 
 import com.robsil.rovies.data.domain.MovieRate;
-import com.robsil.rovies.model.movieRate.MovieRateCreateRequest;
-import com.robsil.rovies.model.movieRate.MovieRateDto;
+import com.robsil.rovies.model.movierate.MovieRateCreateRequest;
+import com.robsil.rovies.model.movierate.MovieRateDto;
 import com.robsil.rovies.util.mapper.MovieRateMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +33,6 @@ public class MovieRateFacadeService {
                                 .userId(user.getId())
                                 .movieId(request.movieId())
                                 .build())))
-                .map(mr -> movieRateMapper.toDto(mr));
+                .map(movieRateMapper::toDto);
     }
 }

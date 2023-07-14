@@ -30,6 +30,7 @@ public class MovieFacadeService {
                         .map(genres -> movieMapper.toDto(movie, genres.parallelStream().map(genreMapper::toDto).toList())));
     }
 
+    // could be made with movieRepository via custom query, but want to have rate here :)
     public Flux<RatedMovieDto> getRatedPageable(int page, int pageSize, User user) {
         return movieRateService.findAllByUserId(user.getId(), page, pageSize)
                 .flatMap(mr -> movieService.findById(mr.getMovieId())
@@ -42,10 +43,6 @@ public class MovieFacadeService {
                                 )
                         )
                 );
-//        return movieService.getRatedPageable(page, pageSize, user.getId())
-//                .flatMap(movie -> genreService.findAllByMovieId(movie.getId())
-//                        .collectList()
-//                        .map(genres -> movieMapper.toRatedDto(movie, genres.parallelStream().map(genreMapper::toDto).toList())));
     }
 
     public Mono<MovieDto> findById(Long id) {

@@ -1,7 +1,7 @@
 package com.robsil.rovies.util.mapper;
 
 import com.robsil.rovies.data.domain.MovieRate;
-import com.robsil.rovies.model.movieRate.MovieRateDto;
+import com.robsil.rovies.model.movierate.MovieRateDto;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
