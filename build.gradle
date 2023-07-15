@@ -2,7 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version "$springBootVersion"
 	id 'io.spring.dependency-management' version "$springDependecyManagementVersion"
-	id "com.github.spotbugs" version "5.0.14"
 }
 
 group = 'com.robsil'
