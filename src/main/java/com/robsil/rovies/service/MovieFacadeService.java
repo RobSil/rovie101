@@ -42,11 +42,11 @@ public class MovieFacadeService {
                                     from movies
                                              left outer join movie_rates mr on movies.id = mr.movie_id
                                     group by movies.id
-                                    order by avgRate desc nulls last
-                                    offset :page
+                                    order by avgRate desc nulls last, movies.id
+                                    offset :offset
                                     limit :pageSize
                         """)
-                .bind("page", page)
+                .bind("offset", page * pageSize)
                 .bind("pageSize", pageSize)
                 .map((row, rowMetadata) -> movieMapper.toRatedDto(Movie.builder()
                                 .id(row.get(0, Long.class))
