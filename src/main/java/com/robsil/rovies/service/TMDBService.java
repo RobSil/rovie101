@@ -43,10 +43,14 @@ public class TMDBService {
         httpClient = HttpClient.newBuilder().build();
     }
 
-    //    @Transactional
+    public void importPagesOfMovies(int pages, int offset) {
+        for (int i = offset; i < pages; i++) {
+            getTopRatedMovies(i);
+        }
+    }
+
     public List<Movie> getTopRatedMovies(int page) {
         Assert.isTrue(page > 0, "page should be higher than zero");
-//        tmdbUrl + "/3/movie/top_rated?page=" + page
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(TMDB_URL + "/3/movie/top_rated?page=" + page))
                 .header("Authorization", "Bearer " + accessToken)
