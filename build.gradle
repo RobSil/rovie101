@@ -34,10 +34,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+
+	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor "org.mapstruct:mapstruct-processor:$mapStructVersion"
 	implementation "org.mapstruct:mapstruct:$mapStructVersion"
 	implementation 'org.flywaydb:flyway-core'
-	annotationProcessor "org.mapstruct:mapstruct-processor:$mapStructVersion"
-	annotationProcessor 'org.projectlombok:lombok'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	runtimeOnly 'org.postgresql:r2dbc-postgresql'

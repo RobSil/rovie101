@@ -27,4 +27,7 @@ public class MovieRateService {
         return movieRateRepository.findAllByUserId(userId, page, pageSize);
     }
 
+    public Mono<Void> deleteById(Long id) {
+        return movieRateRepository.deleteById(id);
+    }
 }

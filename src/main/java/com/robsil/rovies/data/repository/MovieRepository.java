@@ -11,7 +11,7 @@ public interface MovieRepository extends R2dbcRepository<Movie, Long> {
     Mono<Movie> findByName(String name);
 
     @Query("select * from movies movie offset :page limit :pageSize")
-    Flux<Movie> findAllPageable(Integer page, Integer pageSize);
+    Flux<Movie> findAllPageable(int page, int pageSize);
 
 //    @Query("select * from movies movie where movie.id in " +
 //            "(select mr.movie_id from movie_rates mr where mr.user_id = :userId) " +
