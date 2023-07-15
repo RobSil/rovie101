@@ -1,16 +1,12 @@
 package com.robsil.rovies.controller;
 
 import com.robsil.rovies.data.domain.User;
-import com.robsil.rovies.data.repository.MovieRepository;
 import com.robsil.rovies.model.movie.MovieDto;
 import com.robsil.rovies.model.movie.RatedMovieDto;
 import com.robsil.rovies.model.movierate.MovieRateDto;
 import com.robsil.rovies.model.movierate.SimpleMovieRateCreateRequest;
 import com.robsil.rovies.service.MovieFacadeService;
 import com.robsil.rovies.service.MovieRateFacadeService;
-import com.robsil.rovies.service.MovieRateService;
-import com.robsil.rovies.service.MovieService;
-import com.robsil.rovies.util.mapper.MovieMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
@@ -26,12 +22,8 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/v1/movies")
 public class MovieController {
 
-    private final MovieService movieService;
     private final MovieFacadeService movieFacadeService;
     private final MovieRateFacadeService movieRateFacadeService;
-    private final MovieRateService movieRateService;
-    private final MovieMapper movieMapper;
-    private final MovieRepository movieRepository;
 
     @GetMapping
     public Flux<RatedMovieDto> getPageable(@RequestParam Integer page, @RequestParam Integer pageSize) {
